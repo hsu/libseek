@@ -44,7 +44,7 @@ int main() {
 					if (v < _min) _min = v;
 				}
 			}
-#elif 0
+#elif 1
 			_max = 0x8200;
 			_min = 0x7e00;
 #else
