@@ -24,6 +24,7 @@ The example can be plugged onto ffmpeg like this:
    ./build/seek-test \
     | ffplay -i - -f rawvideo -video_size 208x156 -pixel_format gray16le
 
+    seek-test | ffmpeg  -video_size 208x156 -pixel_format rgb48le -f rawvideo -i - -an  -c:v libx264 -pix_fmt yuv420p -b 160000 -s 208x156 -b:v 200k -flags -global_header -g 2 -f mpegts udp://ip:port?pkt_size=1316 > ~/libseek.x 2>&1 &
 
 The library performs bad pixels correction based on a list of bad
 pixels; that list can be obtained by running:

@@ -3,6 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include <math.h>
 
 #include "seek.hpp"
 
@@ -29,11 +30,11 @@ int main() {
 
 		int h = frame.height();
 		int w = frame.width();
-		vector<uint16_t> img(w*h);
+		vector<uint16_t> img(3*w*h);
 		{
 			int _max = 0;
 			int _min = 0xffff;
-#if 0
+#if 1
 			for (int y = 0; y < h; y++) {
 				for (int x = 0; x < w; x++) {
 					uint16_t v = frame.data()[y*w+x];
@@ -41,7 +42,6 @@ int main() {
 					if (v < _min) _min = v;
 				}
 			}
-
 #elif 0
 			_max = 0x8200;
 			_min = 0x7e00;
@@ -52,21 +52,64 @@ int main() {
 
 			for (int y = 0; y < h; y++) {
 				for (int x = 0; x < w; x++) {
+          // for (int c = 0; c < 3; c++) {
 #if 1
-					float v = float(frame.data()[y*w+x] - _min) / (_max - _min);
-					if (v < 0.0) { v = 0; }
-					if (v > 1.0) { v = 1; }
-					uint16_t o = 0xffff * v;
+            float v = float(frame.data()[y*w+x] - _min) / (_max - _min);
+            if (v < 0.0) { v = 0; }
+            if (v > 1.0) { v = 1; }
+            uint16_t o = 0xffff * v;
 #else
-					uint16_t o = frame.data()[y*w+x];
+            uint16_t o = frame.data()[y*w+x];
 #endif
-					//fprintf(stderr, " %4x", o);
-					img[y*w+x] = o;
+            uint16_t r = 0;
+            uint16_t g = 0;
+            uint16_t b = 0;
+
+            double gray = static_cast<double>(o) / static_cast<double>(0xffff);
+            double step = (1.0 - gray) / 0.25;  // [0 to 4)
+            int step_int = floor(step);
+            uint16_t scalar = floor(0xffff*(gray - step));
+            if (step_int == 0)
+            {
+              r = 0xFFFF;
+              g = o;
+              b = 0;
+            }
+            else if (step_int == 1)
+            {
+              r = 0xFFFF-o;
+              g = 0xFFFF;
+              b = 0;
+            }
+            else if (step_int == 2)
+            {
+              r = 0;
+              g = 0xFFFF;
+              b = o;
+            }
+            else if (step_int == 3)
+            {
+              r = 0;
+              g = 0xFFF - o;
+              b = 0xFFFF;
+            }
+            else if (step_int == 4)
+            {
+              r = 0;
+              g = 0;
+              b = 0xffff;
+            }
+
+            //fprintf(stderr, " %4x", o);
+            img[3*(y*w+x)+0] = r;
+            img[3*(y*w+x)+1] = g;
+            img[3*(y*w+x)+2] = b;
+          // }
 				}
 				//fprintf(stderr, "\n");
 			}
 			//fprintf(stderr, "\n");
-			fwrite((uint8_t*)img.data(), sizeof(uint16_t), w*h, stdout);
+			fwrite((uint8_t*)img.data(), sizeof(uint16_t), 3*w*h, stdout);
 		}
 
 	}

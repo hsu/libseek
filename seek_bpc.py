@@ -146,6 +146,7 @@ class BPC_Static(object):
 		for x0, y0 in self._bad_crazy:
 			v = 0
 			for (x,y), w in self._bad_crazy[x0,y0]:
+				print("yo[%d] y[%d] x0[%d] x[%d] w[%d]" %(y0, y, x0, x, w))
 				v += img[y0+y,x0+x] * w
 			img[y0,x0] = v
 
@@ -171,10 +172,10 @@ if __name__ == '__main__':
 
 	bpc = BPC_Static(img)
 
-	"""
+	# """
 	bpc.identify()
 	bpc.save()
-	"""
+	# """
 
 	bpc.load()
 
@@ -223,7 +224,7 @@ if __name__ == '__main__':
 			cnts = tuple(sorted(bpc._bad_crazy[x0,y0]))
 			log("%3d %3d %d\n" % (y0,x0, bpc_kinds2.index(cnts)))
 
-	img = np.float32(cv2.imread("frame-000.pgm"))/255
+	img = np.float32(cv2.imread("frame-000-raw.pgm"))/255
 
 	bpc.correct(img)
 

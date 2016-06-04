@@ -82,8 +82,8 @@ struct Request {
 
 class Frame::impl {
  public:
-	int width = 208;
-	int height = 156;
+	int width = 208; // 155; // 208;
+	int height = 156; // 192; // 156;
 	vector<uint8_t> rawdata;
 	vector<uint16_t> data;
 	void process();
@@ -160,7 +160,10 @@ Imager::impl::impl()
 {
 	printf("%s:%d\n", __PRETTY_FUNCTION__, __LINE__);
 
-	ifstream is("seek_bpc_2.dat");
+	ifstream is("/home/pi/seek_bpc_2.dat");
+	// printf("/home/pi/libseek/seek_bpc_2.dat\n");
+
+  // FILE *out = fopen("/tmp/out.xxx", "w");
 
 	if (is.is_open()) {
 
@@ -173,6 +176,8 @@ Imager::impl::impl()
 			bpc_weights[i] = v;
 		}
 
+    // fprintf(out, "nb_w %d\n",nb_w);
+
 		int nb_k;
 		is >> nb_k;
 		bpc_kinds.resize(nb_k);
@@ -181,10 +186,12 @@ Imager::impl::impl()
 			is >> nb_c;
 			bpc_kinds[i].resize(nb_c);
 			for (int j = 0; j < nb_c; j++) {
-				int dx, dy, iw;
+				int8_t dx, dy, iw;
 				is >> dy >> dx >> iw;
 				bpc_kinds[i][j] = make_tuple(dx, dy, iw);
+        // fprintf(out, "bpc_kinds[%d][%d]=(%d, %d, %d)\n", i, j, dx, dy, iw);
 			}
+      // fprintf(out, "nb_k %d nb_c %d\n",nb_k, nb_c);
 		}
 
 		int nb_bp;
@@ -195,6 +202,8 @@ Imager::impl::impl()
 			is >> y >> x >> ik;
 			bpc_list[i] = make_tuple(x, y, ik);
 		}
+    // fprintf(out, "nb_bp %d\n",nb_bp);
+    // fclose(out);
 
 	}
 
@@ -227,8 +236,6 @@ void Imager::impl::init()
 	if (cnt < 0) {
 		throw runtime_error("No devices");
 	}
-
-	printf("\nDevice Count : %zd\n-------------------------------\n",cnt);
 
 	bool found(false);
 	for (int idx_dev = 0; idx_dev < cnt; idx_dev++) {
@@ -621,10 +628,15 @@ void Imager::frame_acquire(Frame & frame)
 			continue;
 		}
 
+    // FILE *out = fopen("/tmp/out.xxx", "a+");
+
 		vector<uint16_t> & data = frame.m->data;
 
 		int h = frame.height();
 		int w = frame.width();
+
+    // fprintf(out, "w %d h %d\n",w, h);
+    // fflush(out);
 
 		for (int y = 0; y < h; y++) {
 			for (int x = 0; x < w; x++) {
@@ -637,6 +649,11 @@ void Imager::frame_acquire(Frame & frame)
 				uint16_t v_cal = reinterpret_cast<uint16_t*>
 				 (m->calib.m->rawdata.data())[y*w+x];
 				v_cal = le16toh(v_cal);
+
+        // fprintf(out, "x %d y %d yw+x %d\n",x, y, y*w+x);
+        // fflush(out);
+        // fprintf(out, "v %d v_cal %d\n",v, v_cal);
+        // fflush(out);
 
 				a = int(v) - int(v_cal);
 
@@ -653,6 +670,8 @@ void Imager::frame_acquire(Frame & frame)
 				v = a;
 
 				data[y*w+x] = v;
+        // fprintf(out, "data[%d] %d\n",y*w+x, data[y*w+x]);
+        // fflush(out);
 			}
 		}
 
@@ -660,16 +679,32 @@ void Imager::frame_acquire(Frame & frame)
 		for (int idx_bp = 0; idx_bp < m->bpc_list.size(); idx_bp++) {
 			int x, y, ik;
 			tie(x, y, ik) = m->bpc_list[idx_bp];
-			//intf("Correcting %d %d/%d\n", idx_bp, x, y);
+		  // fprintf(out, "idx_bp %d x %d y %d ik %d\n", idx_bp, x, y, ik);
+      // fflush(out);
 			auto cnt = m->bpc_kinds[ik];
 			float v = 0;
+		  // fprintf(out, "cnt size %d\n", cnt.size());
+      // fflush(out);
 			for (int idx_pt = 0; idx_pt < cnt.size(); idx_pt++) {
-				int dx, dy, iw;
+				int8_t dx, dy, iw;
 				tie(dx, dy, iw) = cnt[idx_pt];
+			  // fprintf(out, "idx_pt %d dx %d dy %d iw %d\n", idx_pt, dx, dy, iw);
+        // fflush(out);
+			  // fprintf(out, "data[%d]\n", (y+dy)*w+(x+dx));
+        // fflush(out);
+			  // fprintf(out, "bpe_weights[%d]\n", iw);
+        // fflush(out);
+			  // fprintf(out, "data[%d]=%d bpc_weights[%d]=%d\n", (y+dy)*w+(x+dx), data[(y+dy)*w+(x+dx)], iw, m->bpc_weights[iw]);
+        // fflush(out);
 				v += data[(y+dy)*w+(x+dx)] * m->bpc_weights[iw];
+				// fprintf(out, "v[%d][%d] %d\n", idx_bp, idx_pt, v);
+        // fflush(out);
 			}
 			data[y*w+x] = v;
+      // fprintf(out, "data[%d] %d\n", y*w+x, data[y*w+x]);
+      // fflush(out);
 		}
+    // fclose(out);
 
 		break;
 	}
