@@ -30,13 +30,15 @@ int main() {
 
 		int h = frame.height();
 		int w = frame.width();
+    fprintf(stderr, "h %d w %d\n", h, w);
 		vector<uint16_t> img(3*w*h);
 		{
 			int _max = 0;
 			int _min = 0xffff;
+			int _margin = 0;
 #if 1
-			for (int y = 0; y < h; y++) {
-				for (int x = 0; x < w; x++) {
+			for (int y = _margin; y < h-_margin; y++) {
+				for (int x = _margin; x < w-_margin; x++) {
 					uint16_t v = frame.data()[y*w+x];
 					if (v > _max) _max = v;
 					if (v < _min) _min = v;

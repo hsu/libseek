@@ -585,6 +585,12 @@ void Imager::impl::frame_get_one(Frame & frame)
 		int todo = bufsize;
 		int done = 0;
 
+    /*
+    fprintf(stderr, "LIBUSB_ERROR_TIMEOUT (-7) %d\n", LIBUSB_ERROR_TIMEOUT);
+    fprintf(stderr, "LIBUSB_ERROR_PIPE (-9) %d\n", LIBUSB_ERROR_PIPE);
+    fprintf(stderr, "LIBUSB_ERROR_OVERFLOW (-8) %d\n", LIBUSB_ERROR_OVERFLOW);
+    fprintf(stderr, "LIBUSB_ERROR_NO_DEVICE (-4) %d\n", LIBUSB_ERROR_NO_DEVICE);
+    */
 		while (todo != 0) {
 			int actual_length = 0;
 			printf("Asking for %d B of data at %d\n", todo, done);
@@ -592,8 +598,16 @@ void Imager::impl::frame_get_one(Frame & frame)
 			 todo, &actual_length, 500);
 			if (res != 0) {
 				fprintf(stderr, "\x1B[31;1m%s: libusb_bulk_transfer returned %d\x1B[0m\n", __func__, res);
+        Imager::impl::exit();
+        ::sleep(1);
+        Imager::impl::init();
+        ::sleep(1);
+        // Imager::frame_init(frame);
+        // ::sleep(1);
+			  fprintf(stderr, "Actual length %d todo %d \n", actual_length, todo);
+			  todo = 0;
 			}
-			printf("Actual length %d\n", actual_length);
+			printf("Actual length %d todo: %d\n", actual_length, todo);
 			todo -= actual_length;
 			done += actual_length;
 		}
