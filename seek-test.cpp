@@ -30,7 +30,7 @@ int main() {
 
 		int h = frame.height();
 		int w = frame.width();
-    fprintf(stderr, "h %d w %d\n", h, w);
+    // fprintf(stderr, "h %d w %d\n", h, w);
 		vector<uint16_t> img(3*w*h);
 		{
 			int _max = 0;
@@ -44,7 +44,7 @@ int main() {
 					if (v < _min) _min = v;
 				}
 			}
-#elif 1
+#elif 0
 			_max = 0x8200;
 			_min = 0x7e00;
 #else
