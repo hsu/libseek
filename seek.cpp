@@ -691,12 +691,14 @@ void Imager::frame_acquire(Frame & frame)
 		for (int idx_bp = 0; idx_bp < m->bpc_list.size(); idx_bp++) {
 			int x, y, ik;
 			tie(x, y, ik) = m->bpc_list[idx_bp];
+		  // fprintf(out, "x, y, ik[%d, %d, %d]\n", x, y, ik);
 			auto cnt = m->bpc_kinds[ik];
 			float v = 0;
 			float avg = 0;
 		  // fprintf(out, "data[%d] before %d\n", y*w+x, data[y*w+x]); fflush(out);
 			for (int idx_pt = 0; idx_pt < cnt.size(); idx_pt++) {
-				int8_t dx, dy, iw;
+				int8_t dx, dy;
+				int iw;
 				tie(dx, dy, iw) = cnt[idx_pt];
 			  // fprintf(out, "    idx_pt %d dx %d dy %d iw %d\n", idx_pt, dx, dy, iw); fflush(out);
 				avg += data[(y+dy)*w+(x+dx)] / cnt.size();
@@ -704,9 +706,9 @@ void Imager::frame_acquire(Frame & frame)
 				v = v+corr;
         // fprintf(out, "    data[%d][%d] w[%f] corr[%f] v[%f]\n", (y+dy)*w+(x+dx), data[(y+dy)*w+(x+dx)], m->bpc_weights[iw], corr, v); fflush(out);
 			}
-			// data[y*w+x] = v;
+			data[y*w+x] = v;
 			// data[y*w+x] += v;
-			data[y*w+x] = avg;
+			// data[y*w+x] = avg;
 		  // fprintf(out, "data[%d] after %d v[%f]\n", y*w+x, data[y*w+x], v); fflush(out);
 		}
     // fclose(out);
