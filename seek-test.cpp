@@ -36,7 +36,7 @@ int main() {
 			int _max = 0;
 			int _min = 0xffff;
 			int _margin = 0;
-#if 1
+#if 0
 			for (int y = _margin; y < h-_margin; y++) {
 				for (int x = _margin; x < w-_margin; x++) {
 					uint16_t v = frame.data()[y*w+x];
@@ -44,12 +44,12 @@ int main() {
 					if (v < _min) _min = v;
 				}
 			}
-#elif 0
+#elif 1
 			_max = 0x8200;
 			_min = 0x7e00;
 #else
 			_max = 0xffff;
-			_min = 0x0;
+			_min = 0x0000;
 #endif
 
 			for (int y = 0; y < h; y++) {

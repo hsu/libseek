@@ -24,7 +24,7 @@ class BPC_Static(object):
 			beg = x1,y1
 			end = x2,y2
 
-			#print("Paint from %d,%d to %d,%d" % (x1,y1,x2,y2))
+			print("Paint from %d,%d to %d,%d" % (x1,y1,x2,y2))
 			dx = x2 - x1
 			dy = y2 - y1
 			is_steep = abs(dy) > abs(dx)
