@@ -602,8 +602,6 @@ void Imager::impl::frame_get_one(Frame & frame)
         ::sleep(1);
         Imager::impl::init();
         ::sleep(1);
-        // Imager::frame_init(frame);
-        // ::sleep(1);
 			  fprintf(stderr, "Actual length %d todo %d \n", actual_length, todo);
 			  todo = 0;
 			}
