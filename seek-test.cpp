@@ -46,10 +46,10 @@ int main() {
 			}
 
       // make more dramatic
-      _max = _max - 0x0100;
-      if (_max < _min) _max = _min;
-      _min = _min - 0x0000;
-      if (_min < 0x0000) _min = 0x0000;
+      // _max = _max - 0x0100;
+      // if (_max < _min) _max = _min;
+      // _min = _min - 0x0000;
+      // if (_min < 0x0000) _min = 0x0000;
 #elif 0
 			_max = 0x8200;
 			_min = 0x7e00;
