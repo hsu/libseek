@@ -24,6 +24,9 @@ int main() {
 
 	iface.frame_init(frame);
 
+  int _max = 0;
+  int _min = 0xffff;
+
 	for (int i = 0; i < 71370537; i++) {
 		//break;
 		iface.frame_acquire(frame);
@@ -33,31 +36,35 @@ int main() {
     // fprintf(stderr, "h %d w %d\n", h, w);
 		vector<uint16_t> img(3*w*h);
 		{
-			int _max = 0;
-			int _min = 0xffff;
+			int _max_cur = 0;
+			int _min_cur = 0xffff;
 			int _margin = 0;
 #if 1
 			for (int y = _margin; y < h-_margin; y++) {
 				for (int x = _margin; x < w-_margin; x++) {
 					uint16_t v = frame.data()[y*w+x];
-					if (v > _max) _max = v;
-					if (v < _min) _min = v;
+					if (v > _max_cur) _max_cur = v;
+					if (v < _min_cur) _min_cur = v;
 				}
 			}
 
       // make more dramatic
-      _max = _max - 0x0100;
-      if (_max < _min) _max = _min + 0x0020;
-      if (_max > 0xFFFF) _max = 0xFFFF;
-      _min = _min - 0x0000;
-      if (_min < 0x0000) _min = 0x0000;
+      _max_cur = _max_cur - 0x0100;
+      if (_max_cur < _min_cur) _max_cur = _min_cur + 0x0020;
+      if (_max_cur > 0xFFFF) _max_cur = 0xFFFF;
+      _min_cur = _min_cur - 0x0000;
+      if (_min_cur < 0x0000) _min_cur = 0x0000;
 #elif 0
-			_max = 0x8200;
-			_min = 0x7e00;
+			_max_cur = 0x8200;
+			_min_cur = 0x7e00;
 #else
-			_max = 0xffff;
-			_min = 0x0000;
+			_max_cur = 0xffff;
+			_min_cur = 0x0000;
 #endif
+
+      float eps = 0.1;
+      _max = (1.0 - eps) * _max + eps * _max_cur;
+      _min = (1.0 - eps) * _min + eps * _min_cur;
 
 			for (int y = 0; y < h; y++) {
 				for (int x = 0; x < w; x++) {
