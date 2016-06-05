@@ -49,8 +49,8 @@ int main() {
 			}
 
       // make more dramatic
-      _max_cur = _max_cur - 0x0100;
-      if (_max_cur < _min_cur) _max_cur = _min_cur + 0x0020;
+      _max_cur = _max_cur - 0x0050;
+      if (_max_cur < _min_cur) _max_cur = _max_cur + 0x0050;  // revert
       if (_max_cur > 0xFFFF) _max_cur = 0xFFFF;
       _min_cur = _min_cur - 0x0000;
       if (_min_cur < 0x0000) _min_cur = 0x0000;
