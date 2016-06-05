@@ -49,11 +49,14 @@ int main() {
 			}
 
       // make more dramatic
-      _max_cur = _max_cur - 0x0050;
-      if (_max_cur < _min_cur) _max_cur = _max_cur + 0x0050;  // revert
-      if (_max_cur > 0xFFFF) _max_cur = 0xFFFF;
-      _min_cur = _min_cur - 0x0000;
-      if (_min_cur < 0x0000) _min_cur = 0x0000;
+      if (0)
+      {
+        _max_cur = _max_cur - 0x0050;
+        if (_max_cur < _min_cur) _max_cur = _max_cur + 0x0050;  // revert
+        if (_max_cur > 0xFFFF) _max_cur = 0xFFFF;
+        _min_cur = _min_cur - 0x0000;
+        if (_min_cur < 0x0000) _min_cur = 0x0000;
+      }
 #elif 0
 			_max_cur = 0x8200;
 			_min_cur = 0x7e00;
