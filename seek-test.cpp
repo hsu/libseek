@@ -91,7 +91,7 @@ int main() {
             if (step_int == 0)
             {
               r = 0xFFFF;
-              g = scalar;
+              g = 0xFFFF-scalar;
               b = 0;
             }
             else if (step_int == 1)
