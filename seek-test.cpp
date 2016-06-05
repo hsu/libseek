@@ -46,10 +46,10 @@ int main() {
 			}
 
       // make more dramatic
-      _max = _max - 0x0200;
+      _max = _max - 0x0100;
       if (_max < _min) _max = _min;
-      _min = _min + 0x0100;
-      if (_min > _max) _min = _max;
+      _min = _min - 0x0000;
+      if (_min < 0x0000) _min = 0x0000;
 #elif 0
 			_max = 0x8200;
 			_min = 0x7e00;
@@ -69,23 +69,23 @@ int main() {
 #else
             uint16_t o = frame.data()[y*w+x];
 #endif
+            // https://www.particleincell.com/2014/colormap/
             uint16_t r = 0;
             uint16_t g = 0;
             uint16_t b = 0;
 
-            double gray = static_cast<double>(o) / static_cast<double>(0xffff);
-            double step = (1.0 - gray) / 0.25;  // [0 to 4)
+            double step = (1.0 - v) / 0.25;  // [0 to 4)
             int step_int = floor(step);
-            uint16_t scalar = floor(0xffff*(gray - step));
+            uint16_t scalar = floor(0xffff*(v - step));
             if (step_int == 0)
             {
               r = 0xFFFF;
-              g = o;
+              g = scalar;
               b = 0;
             }
             else if (step_int == 1)
             {
-              r = 0xFFFF-o;
+              r = 0xFFFF-scalar;
               g = 0xFFFF;
               b = 0;
             }
@@ -93,19 +93,19 @@ int main() {
             {
               r = 0;
               g = 0xFFFF;
-              b = o;
+              b = scalar;
             }
             else if (step_int == 3)
             {
               r = 0;
-              g = 0xFFF - o;
+              g = 0xFFFF-scalar;
               b = 0xFFFF;
             }
-            else if (step_int == 4)
+            else if (step_int >= 4)
             {
               r = 0;
               g = 0;
-              b = 0xffff;
+              b = 0xFFFF;
             }
 
             //fprintf(stderr, " %4x", o);
