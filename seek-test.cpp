@@ -34,7 +34,7 @@ int main() {
 		int h = frame.height();
 		int w = frame.width();
     // fprintf(stderr, "h %d w %d\n", h, w);
-		vector<uint16_t> img(3*w*h);
+		vector<uint8_t> img(3*w*h);
 		{
 			int _max_cur = 0;
 			int _min_cur = 0xffff;
@@ -76,47 +76,47 @@ int main() {
             float v = float(frame.data()[y*w+x] - _min) / (_max - _min);
             if (v < 0.0) { v = 0; }
             if (v > 1.0) { v = 1; }
-            uint16_t o = 0xffff * v;
+            uint8_t o = 0xffff * v;
 #else
-            uint16_t o = frame.data()[y*w+x];
+            uint8_t o = frame.data()[y*w+x];
 #endif
             // https://www.particleincell.com/2014/colormap/
-            uint16_t r = 0;
-            uint16_t g = 0;
-            uint16_t b = 0;
+            uint8_t r = 0;
+            uint8_t g = 0;
+            uint8_t b = 0;
 
             double step = (1.0 - v) / 0.25;  // [0 to 4)
             int step_int = floor(step);
-            uint16_t scalar = floor(0xffff*(v - step));
+            uint8_t scalar = floor(0xff*(v - step));
             if (step_int == 0)
             {
-              r = 0xFFFF;
-              g = scalar;
+              r = 0xFF;
+              g = 0xFF-scalar;
               b = 0;
             }
             else if (step_int == 1)
             {
-              r = 0xFFFF-scalar;
-              g = 0xFFFF;
+              r = 0xFF-scalar;
+              g = 0xFF;
               b = 0;
             }
             else if (step_int == 2)
             {
               r = 0;
-              g = 0xFFFF;
+              g = 0xFF;
               b = scalar;
             }
             else if (step_int == 3)
             {
               r = 0;
-              g = 0xFFFF-scalar;
-              b = 0xFFFF;
+              g = 0xFF-scalar;
+              b = 0xFF;
             }
             else if (step_int >= 4)
             {
               r = 0;
               g = 0;
-              b = 0xFFFF;
+              b = 0xFF;
             }
 
             //fprintf(stderr, " %4x", o);
@@ -128,7 +128,7 @@ int main() {
 				//fprintf(stderr, "\n");
 			}
 			//fprintf(stderr, "\n");
-			fwrite((uint8_t*)img.data(), sizeof(uint16_t), 3*w*h, stdout);
+			fwrite((uint8_t*)img.data(), sizeof(uint8_t), 3*w*h, stdout);
 		}
 
 	}
